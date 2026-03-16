@@ -1,0 +1,13 @@
+Insurance Policy Renewal
+
+Policy Number: INS-2025-789
+Coverage: Comprehensive Auto
+Premium: $1,200/year
+Renewal Date: 2025-04-01
+
+Dear Client,
+
+Your policy is due for renewal. Please contact us to discuss coverage options.
+
+Thank you for your business,
+Insurance Services

@@ -1,0 +1,11 @@
+Mortgage Application Confirmation
+
+Application ID: MTG-2025-001
+Property Address: 123 Main Street, Anytown, USA
+Loan Amount: $350,000
+Application Date: 2025-02-10
+
+Thank you for your application. Our team will contact you within 2-3 business days.
+
+Sincerely,
+Mortgage Department

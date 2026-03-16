@@ -1,0 +1,9 @@
+{
+  "receive_time": "2025-01-15T11:30:00Z",
+  "creation_time": "2025-01-15T11:25:00Z",
+  "sender": "Insurance Services",
+  "email": "insurance@company.com",
+  "channel": "email",
+  "client_id": "CLIENT-004",
+  "client_name": "Premier Insurance Group"
+}

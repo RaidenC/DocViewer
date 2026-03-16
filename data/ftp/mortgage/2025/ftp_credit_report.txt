@@ -1,0 +1,10 @@
+FTP TRANSFER - Credit Report
+
+Transfer ID: FTP-2025-050
+Source: Credit Bureau Service
+Destination: DocViewer System
+Document Type: Credit Report
+Request ID: CR-2025-12345
+Transfer Date: 2025-02-28
+
+This file contains credit report data retrieved from the credit bureau service.

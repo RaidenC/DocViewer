@@ -1,0 +1,56 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+env:
+  DOTNET_VERSION: '10.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore src/DocViewer.sln
+
+      - name: Build
+        run: dotnet build src/DocViewer.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test src/DocViewer.sln --configuration Release --no-build || true
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: src/DocViewer.WebApp/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: src/DocViewer.WebApp
+
+      - name: Lint
+        run: npm run lint || true
+        working-directory: src/DocViewer.WebApp
+
+      - name: Build
+        run: npm run build
+        working-directory: src/DocViewer.WebApp

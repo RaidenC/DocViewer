@@ -1,0 +1,9 @@
+{
+  "receive_time": "2024-08-10T03:00:00Z",
+  "creation_time": "2024-08-10T02:55:00Z",
+  "sender": "Partner System ABC",
+  "email": "ftp@partnerabc.com",
+  "channel": "ftp",
+  "client_id": "CLIENT-007",
+  "client_name": "Fleet Solutions Inc"
+}

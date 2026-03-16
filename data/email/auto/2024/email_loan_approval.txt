@@ -1,0 +1,16 @@
+Auto Loan Approval Notice
+
+Dear Customer,
+
+Your auto loan application has been approved!
+
+Loan Details:
+- Approved Amount: $25,000
+- Term: 60 months
+- Interest Rate: 4.9% APR
+- Monthly Payment: $469.70
+
+Please review the attached documents and sign to proceed.
+
+Best regards,
+Auto Finance Team

@@ -1,0 +1,9 @@
+{
+  "receive_time": "2024-01-15T10:30:00Z",
+  "creation_time": "2024-01-15T10:25:00Z",
+  "sender": "Auto Finance Department",
+  "email": "autofinance@example.com",
+  "channel": "fax",
+  "client_id": "CLIENT-001",
+  "client_name": "ABC Auto Dealership"
+}

@@ -1,0 +1,6 @@
+@DocViewer.Api_HostAddress = http://localhost:5155
+
+GET {{DocViewer.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

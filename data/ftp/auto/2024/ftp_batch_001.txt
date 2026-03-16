@@ -1,0 +1,9 @@
+FTP TRANSFER - Batch Processing File
+
+Transfer ID: FTP-2024-100
+Source: Partner System ABC
+Destination: DocViewer System
+File Count: 5 documents
+Transfer Date: 2024-08-10
+
+This file was automatically transferred via secure FTP from the partner's system for processing.

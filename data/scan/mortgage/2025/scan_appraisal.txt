@@ -1,0 +1,8 @@
+SCAN DOCUMENT - Property Appraisal
+
+Document Type: Appraisal Report
+Property: 456 Oak Avenue
+Appraised Value: $425,000
+Appraisal Date: 2025-01-20
+
+This is a scanned copy of the official appraisal document.

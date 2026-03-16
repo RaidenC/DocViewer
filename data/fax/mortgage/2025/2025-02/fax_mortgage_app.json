@@ -1,0 +1,9 @@
+{
+  "receive_time": "2025-02-10T14:20:00Z",
+  "creation_time": "2025-02-10T14:15:00Z",
+  "sender": "John Smith",
+  "email": "john.smith@email.com",
+  "channel": "fax",
+  "client_id": "CLIENT-002",
+  "client_name": "Smith Family Trust"
+}
