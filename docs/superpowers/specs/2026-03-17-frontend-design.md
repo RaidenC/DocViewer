@@ -61,8 +61,8 @@ Implement the DocViewer frontend UI according to the product specification in `d
 ### 2.3 Components
 
 #### Header
-- SearchBar: Text input with 300ms debounce
-- FilterDropdown: Channel, date range, client filters
+- SearchBar: Text input with 300ms debounce, useTransition for non-blocking updates
+- FilterDropdown: Channel (singular), date range, client filters
 - ActiveFilters: Removable pill tags
 
 #### FileTree (Left Pane)
@@ -71,10 +71,11 @@ Implement the DocViewer frontend UI according to the product specification in `d
 - File count badges
 - Loading spinner on expand
 - Smooth expand/collapse animation
+- Virtual scrolling for large lists (>100 items)
 
 #### Preview (Right Pane)
-- PdfViewer: Embedded PDF display
-- ImageViewer: Zoomable image display
+- PdfViewer: Lazy-loaded embedded PDF display
+- ImageViewer: Lazy-loaded zoomable image display
 - TextViewer: Syntax-highlighted text
 - Loading state with skeleton
 - Error state for unsupported formats
@@ -90,55 +91,70 @@ Implement the DocViewer frontend UI according to the product specification in `d
 
 ### 3.1 Core Features
 
-**Tree Navigation:**
-- Eager load first 2 levels on initial render
-- Lazy load subsequent levels on expand
-- Cache loaded children in React Query
-- Expand/collapse with smooth animation
+**Tree Navigation (Vercel Best Practices):**
+- Eager load first level on initial render
+- Lazy load subsequent levels on expand (useTransition)
+- Cache loaded children in React Query (staleTime: 5min)
+- Parallel loading: Use `Promise.all` when loading multiple sibling folders
+- Background pre-fetch: Prefetch adjacent folder data on hover
 
 **Search & Filter:**
-- Debounced search input (300ms)
-- Filter by channel (fax/email/scan/ftp)
-- Filter by date range
+- Debounced search input (300ms) with useTransition
+- Filter by channel (fax/email/scan/ftp) - note: backend uses `channel` singular
+- Filter by date range (fromDate, toDate)
 - Filter by client
 - Active filter pills with remove button
+- Pagination support (page, pageSize params)
 
 **Document Preview:**
-- Auto-load preview on file selection
+- Auto-load preview on file selection (lazy load component)
 - Support PDF, images (jpg, png, gif), text files
 - Loading state while fetching
 - Error handling for unsupported types
 
-### 3.2 Data Flow
+**Multi-Select (P2):**
+- Ctrl+click for multi-select
+- Shift+click for range select
+- Selected files highlighted with checkbox
+- Batch operations placeholder (future)
+
+### 3.2 Data Flow (Performance Optimized)
 
 ```
-API Layer (documents.ts)
+User Action
     ↓
-React Query Hooks (useDocumentTree, useSearch, usePreview)
+useTransition (non-blocking UI)
     ↓
-Components (FileTree, Preview, Header)
+React Query (cached, deduplicated)
     ↓
-App State (selected file, active filters)
+API Layer (parallel requests where possible)
+    ↓
+Components (memoized)
 ```
 
-### 3.3 API Integration
+### 3.3 API Integration (Corrected Endpoints)
 
-**Endpoints:**
-- `GET /api/documents/tree?path=&depth=2` - Tree structure
-- `GET /api/documents/search?q=&channels=&client=&fromDate=&toDate=` - Search
-- `GET /api/documents/{id}/preview` - File content
+**Endpoints (matching backend exactly):**
+- `GET /api/documents/tree?path=` - Tree structure
+- `GET /api/documents/search?q=&channel=&client=&fromDate=&toDate=&page=1&pageSize=20` - Search with filters
+- `GET /api/documents/{id}/preview` - File content (id = URL-encoded path)
 - `GET /api/documents/{id}/metadata` - File metadata
+
+**Note:** Backend uses `channel` (singular), not `channels` (plural)
 
 ---
 
 ## 4. Performance (Vercel Best Practices)
 
-- `async-parallel`: Use Promise.all for parallel tree node loading
-- `async-suspense-boundaries`: Wrap components in Suspense
-- `bundle-dynamic-imports`: Lazy load PDF/Image viewers
-- `rerender-transitions`: Use useTransition for search filtering
-- `rerender-memo`: Memoize tree nodes
-- `client-swr-dedup`: React Query handles deduplication
+| Best Practice | Implementation |
+|---------------|----------------|
+| `async-parallel` | Use `Promise.all` when loading multiple sibling folders |
+| `async-suspense-boundaries` | Wrap FileTree and Preview in Suspense |
+| `bundle-dynamic-imports` | Lazy load PDF/Image viewers with `React.lazy` |
+| `rerender-transitions` | Use `useTransition` for search/filter operations |
+| `rerender-memo` | Memoize TreeNode components with `React.memo` |
+| `client-swr-dedup` | React Query handles deduplication automatically |
+| `rendering-content-visibility` | Use content-visibility for large tree lists |
 
 ---
 
@@ -148,26 +164,26 @@ App State (selected file, active filters)
 src/DocViewer.WebApp/src/
 ├── components/
 │   ├── Header/
-│   │   ├── SearchBar.tsx
-│   │   ├── FilterDropdown.tsx
-│   │   └── ActiveFilters.tsx
+│   │   ├── SearchBar.tsx        # debounced, useTransition
+│   │   ├── FilterDropdown.tsx   # lazy loaded options
+│   │   └── ActiveFilters.tsx   # removable pills
 │   ├── FileTree/
-│   │   ├── FileTree.tsx
-│   │   └── TreeNode.tsx
+│   │   ├── FileTree.tsx        # Suspense, memo, virtual scroll
+│   │   └── TreeNode.tsx       # lazy load children, pre-fetch
 │   ├── Preview/
-│   │   ├── PreviewPane.tsx
-│   │   ├── PdfViewer.tsx
-│   │   ├── ImageViewer.tsx
-│   │   └── TextViewer.tsx
+│   │   ├── PreviewPane.tsx    # Suspense wrapper
+│   │   ├── PdfViewer.tsx       # lazy import
+│   │   ├── ImageViewer.tsx     # lazy import
+│   │   └── TextViewer.tsx      # lazy import
 │   └── StatusBar.tsx
 ├── hooks/
-│   ├── useDocumentTree.ts
-│   ├── useSearch.ts
-│   └── usePreview.ts
+│   ├── useDocumentTree.ts      # parallel loading, cache
+│   ├── useSearch.ts            # useTransition, pagination
+│   └── usePreview.ts          # lazy fetch
 ├── api/
-│   └── documents.ts
+│   └── documents.ts            # fetch functions matching backend
 ├── types/
-│   └── index.ts
+│   └── index.ts                # TypeScript interfaces
 ├── App.tsx
 ├── App.css
 └── main.tsx
@@ -175,11 +191,44 @@ src/DocViewer.WebApp/src/
 
 ---
 
-## 6. Acceptance Criteria
+## 6. TypeScript Interfaces
+
+```typescript
+interface TreeNode {
+  id: string;
+  name: string;
+  path: string;
+  type: 'folder' | 'file';
+  channel?: 'fax' | 'email' | 'scan' | 'ftp';
+  hasChildren?: boolean;
+  children?: TreeNode[];
+  isLoading?: boolean;
+}
+
+interface SearchResult {
+  results: TreeNode[];
+  totalCount: number;
+  hasMore: boolean;
+}
+
+interface DocumentMetadata {
+  receiveTime: string;
+  creationTime: string;
+  sender: string;
+  email?: string;
+  channel: string;
+  clientId: string;
+  clientName: string;
+}
+```
+
+---
+
+## 7. Acceptance Criteria
 
 - [ ] Header displays search bar with dropdown filters
 - [ ] Active filters show as removable pills
-- [ ] File tree loads first 2 levels on mount
+- [ ] File tree loads first level on mount
 - [ ] Clicking folder expands and loads children
 - [ ] Clicking file shows preview in right pane
 - [ ] Preview handles PDF, images, and text
@@ -187,3 +236,7 @@ src/DocViewer.WebApp/src/
 - [ ] Responsive layout works at 1024px+ width
 - [ ] Loading states shown during data fetch
 - [ ] Error states handled gracefully
+- [ ] Ctrl+click multi-select works
+- [ ] Virtual scrolling for large lists
+- [ ] useTransition for non-blocking search
+- [ ] API calls match backend (channel singular, pagination params)
