@@ -6,38 +6,78 @@ on:
   pull_request:
     branches: [main, master]
 
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
 env:
   DOTNET_VERSION: '10.0'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: docviewer
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set SHAs
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install Nx
-        uses: actions/setup-node@v4
+      - name: Cache NuGet
+        uses: actions/cache@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.slnx') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
-      - name: Restore .NET
-        run: npx nx run docviewer-api:build --skip-nx-cache
+      - name: Restore .NET projects
+        run: dotnet restore DocViewer.slnx
 
-      - name: Build .NET
-        run: npx nx run docviewer-api:build --configuration Release
+      - name: Lint Affected
+        run: npx nx affected -t lint
 
-      - name: Test .NET
-        run: npx nx run-many --targets=test --configuration Release || true
+      - name: Build Affected
+        run: npx nx affected -t build
+
+      - name: Test Affected
+        run: npx nx affected -t test
 
   frontend:
     runs-on: ubuntu-latest
@@ -48,7 +88,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: src/DocViewer.WebApp/package-lock.json
 
