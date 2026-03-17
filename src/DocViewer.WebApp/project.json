@@ -6,8 +6,9 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
       "options": {
-        "command": "cd src/DocViewer.WebApp && npm run build",
+        "command": "cd src/DocViewer.WebApp && npx vite build",
         "cwd": ".",
         "outputPath": "src/DocViewer.WebApp/dist"
       }
@@ -15,14 +16,28 @@
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd src/DocViewer.WebApp && npm run dev",
+        "command": "cd src/DocViewer.WebApp && npx vite",
         "cwd": "."
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd src/DocViewer.WebApp && npm run lint",
+        "command": "cd src/DocViewer.WebApp && npx eslint .",
+        "cwd": "."
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd src/DocViewer.WebApp && npx vitest",
+        "cwd": "."
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd src/DocViewer.WebApp && npx vite preview",
         "cwd": "."
       }
     }
