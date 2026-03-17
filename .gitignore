@@ -27,3 +27,27 @@ Thumbs.db
 
 # OpenSearch data
 opensearch-data/
+
+# Node modules
+node_modules/
+
+# Nx
+.nx/
+.nx/cache/
+.nx/workspace-data/
+
+# Husky git hooks
+.husky/
+
+# Package locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Test results
+TestResults/
+coverage/
+
+# Temp
+*.tmp
+*.temp
