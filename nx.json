@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "cache": true
+    },
+    "test": {
+      "cache": true
+    }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx-dotnet/core",
+      "options": {
+        "dotnetBuild": true,
+        "targetDirectory": "src"
+      }
+    }
+  ],
+  "workspaceLayout": {
+    "appsDir": "src",
+    "libsDir": "src"
+  }
+}

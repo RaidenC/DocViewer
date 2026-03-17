@@ -1,0 +1,22 @@
+{
+  "name": "docviewer-domain",
+  "$schema": "./node_modules/@nx-dotnet/core/schema.json",
+  "projectType": "library",
+  "sourceRoot": "src/DocViewer.Domain",
+  "targets": {
+    "build": {
+      "executor": "@nx-dotnet/core:build",
+      "outputs": ["{projectRoot}/bin", "{projectRoot}/obj"],
+      "options": {
+        "configuration": "Debug"
+      }
+    },
+    "test": {
+      "executor": "@nx-dotnet/core:test",
+      "outputs": ["{projectRoot}/TestResults/{targetFramework}/*.trx"],
+      "options": {
+        "configuration": "Debug"
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@docviewer/source",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "src/*"
+  ],
+  "scripts": {
+    "nx": "nx"
+  },
+  "devDependencies": {
+    "nx": "^20.0.0",
+    "@nx-dotnet/core": "^3.0.0"
+  }
+}

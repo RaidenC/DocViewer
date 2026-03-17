@@ -1,0 +1,34 @@
+{
+  "name": "docviewer-api",
+  "$schema": "./node_modules/@nx-dotnet/core/schema.json",
+  "projectType": "application",
+  "sourceRoot": "src/DocViewer.Api",
+  "targets": {
+    "build": {
+      "executor": "@nx-dotnet/core:build",
+      "outputs": ["{projectRoot}/bin", "{projectRoot}/obj"],
+      "options": {
+        "configuration": "Debug"
+      },
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        }
+      ]
+    },
+    "serve": {
+      "executor": "@nx-dotnet/core:serve",
+      "options": {
+        "configuration": "Debug"
+      }
+    },
+    "test": {
+      "executor": "@nx-dotnet/core:test",
+      "outputs": ["{projectRoot}/TestResults/{targetFramework}/*.trx"],
+      "options": {
+        "configuration": "Debug"
+      }
+    }
+  }
+}

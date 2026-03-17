@@ -21,14 +21,23 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore
-        run: dotnet restore src/DocViewer.sln
+      - name: Install Nx
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Build
-        run: dotnet build src/DocViewer.sln --configuration Release --no-restore
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Test
-        run: dotnet test src/DocViewer.sln --configuration Release --no-build || true
+      - name: Restore .NET
+        run: npx nx run docviewer-api:build --skip-nx-cache
+
+      - name: Build .NET
+        run: npx nx run docviewer-api:build --configuration Release
+
+      - name: Test .NET
+        run: npx nx run-many --targets=test --configuration Release || true
 
   frontend:
     runs-on: ubuntu-latest
