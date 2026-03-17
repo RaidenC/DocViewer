@@ -45,3 +45,22 @@ DocViewer/
 - `dotnet-best-practices` - .NET coding standards
 - `vercel-react-best-practices` - React patterns
 - `webapp-testing` - Integration testing
+
+## Development Commands
+- `npx nx run-many -t build` - Build all projects
+- `npx nx run-many -t lint` - Lint all projects
+- `npx nx run-many -t format` - Check code format
+- `npx nx run-many -t test` - Run all tests
+- `npx nx run docviewer-api:serve` - Start API server
+- `npx nx run docviewer-webapp:dev` - Start dev server
+
+## Hooks
+
+### PostToolUse
+After editing source files, run lint check:
+
+- matcher: "Edit|Write"
+  hooks:
+    - type: command
+      command: npx nx run-many -t lint --projects=docviewer-api,docviewer-domain,docviewer-application,docviewer-infrastructure,docviewer-webapp
+      timeout: 120
