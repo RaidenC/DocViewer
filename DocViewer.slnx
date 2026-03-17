@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/DocViewer.Api/DocViewer.Api.csproj" />
+  <Project Path="src/DocViewer.Application/DocViewer.Application.csproj" />
+  <Project Path="src/DocViewer.Domain/DocViewer.Domain.csproj" />
+  <Project Path="src/DocViewer.Infrastructure/DocViewer.Infrastructure.csproj" />
+</Solution>
