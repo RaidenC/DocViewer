@@ -6,8 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npx nx run-many -t lint --parallel",
-            "timeout": 120
+            "command": "CI=1 npx nx run-many -t lint --parallel --maxWorkers=2",
+            "timeout": 60
           }
         ]
       }
