@@ -13,7 +13,7 @@ fi
 
 # Run lint
 echo "Running lint..."
-npx nx affected -t lint --parallel --maxWorkers=2
+npx nx affected -t lint
 LINT_EXIT=$?
 
 if [ $LINT_EXIT -ne 0 ]; then
@@ -23,7 +23,7 @@ fi
 
 # Run format (check only)
 echo "Checking code format..."
-npx nx affected -t format --parallel --maxWorkers=2
+npx nx affected -t format
 FORMAT_EXIT=$?
 
 if [ $FORMAT_EXIT -ne 0 ]; then
@@ -33,7 +33,7 @@ fi
 
 # Run tests
 echo "Running tests..."
-npx nx affected -t test --parallel --maxWorkers=2
+npx nx affected -t test
 TEST_EXIT=$?
 
 if [ $TEST_EXIT -ne 0 ]; then
