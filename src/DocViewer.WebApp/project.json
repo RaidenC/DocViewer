@@ -30,7 +30,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd src/DocViewer.WebApp && npx vitest",
+        "command": "cd src/DocViewer.WebApp && npx vitest --run --passWithNoTests",
         "cwd": "."
       }
     },
