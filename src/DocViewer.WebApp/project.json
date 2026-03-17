@@ -40,6 +40,13 @@
         "command": "cd src/DocViewer.WebApp && npx vite preview",
         "cwd": "."
       }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd src/DocViewer.WebApp && npx eslint . --fix",
+        "cwd": "."
+      }
     }
   }
 }

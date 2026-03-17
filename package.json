@@ -6,10 +6,20 @@
     "src/*"
   ],
   "scripts": {
-    "nx": "nx"
+    "nx": "nx",
+    "pre-commit": "bash scripts/pre-commit.sh",
+    "format": "nx format",
+    "format:write": "nx format:write",
+    "install-hooks": "bash scripts/install-hooks.sh"
   },
   "devDependencies": {
-    "nx": "^20.0.0",
-    "@nx-dotnet/core": "^3.0.0"
+    "@nx-dotnet/core": "^3.0.0",
+    "husky": "^9.1.7",
+    "nx": "^20.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run pre-commit"
+    }
   }
 }

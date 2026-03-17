@@ -23,6 +23,15 @@
       "options": {
         "configuration": "Debug"
       }
+    },
+    "format": {
+      "executor": "@nx-dotnet/core:format"
+    },
+    "lint": {
+      "executor": "@nx-dotnet/core:format",
+      "options": {
+        "noRestore": true
+      }
     }
   }
 }
