@@ -1,0 +1,28 @@
+<h2>DocViewer - Tree Behavior</h2>
+<p class="subtitle">How should the file tree handle expansion and loading?</p>
+
+<div class="options">
+  <div class="option" data-choice="lazy" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Lazy Load on Expand</h3>
+      <p>Click folder → API call to load children. Shows spinner while loading. Caches loaded children. Good for large datasets.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="eager" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Eager Load Initial Levels</h3>
+      <p>Load first 2-3 levels upfront. Subsequent levels load on expand. Faster initial experience for typical use.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="search" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Search-First Mode</h3>
+      <p>Default view shows flat list of recent documents. Tree only appears when clicking "Browse" or typing in search.</p>
+    </div>
+  </div>
+</div>
