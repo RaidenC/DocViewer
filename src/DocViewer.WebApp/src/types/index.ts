@@ -36,3 +36,9 @@ export interface SearchFilters {
   page?: number;
   pageSize?: number;
 }
+
+export interface ActiveFilter {
+  key: string;
+  value: string;
+  label: string;
+}
