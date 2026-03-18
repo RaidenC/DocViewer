@@ -14,7 +14,14 @@
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd src/DocViewer.WebApp && npx vite",
+        "command": "cd src/DocViewer.WebApp && npx vite --port 5173",
+        "cwd": "."
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd src/DocViewer.WebApp && npx vite --port 5173",
         "cwd": "."
       }
     },
