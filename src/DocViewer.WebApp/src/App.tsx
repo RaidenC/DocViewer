@@ -6,6 +6,7 @@ import { SearchBar } from './components/Header/SearchBar';
 import FilterDropdown from './components/Header/FilterDropdown';
 import ActiveFilters from './components/Header/ActiveFilters';
 import StatusBar from './components/StatusBar';
+import { useSearch } from './hooks/useSearch';
 import type { TreeNode, ActiveFilter } from './types';
 import './App.css';
 
@@ -20,9 +21,15 @@ const queryClient = new QueryClient({
 
 function AppContent() {
   const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
-  const [_searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [channelFilter, setChannelFilter] = useState<string>('');
   const [clientFilter, setClientFilter] = useState<string>('');
+
+  const { data: searchResults, isLoading: isSearching } = useSearch({
+    q: searchQuery,
+    channel: channelFilter || undefined,
+    client: clientFilter || undefined,
+  });
 
   const handleSelectFile = useCallback((node: TreeNode) => {
     if (node.type === 'file') {
@@ -44,7 +51,10 @@ function AppContent() {
   const handleClearAll = () => {
     setChannelFilter('');
     setClientFilter('');
+    setSearchQuery('');
   };
+
+  const hasActiveSearch = searchQuery || channelFilter || clientFilter;
 
   return (
     <div className="app">
@@ -85,10 +95,31 @@ function AppContent() {
       <main className="app-main">
         <aside className="sidebar">
           <Suspense fallback={<div className="sidebar-loading">Loading...</div>}>
-            <FileTree
-              onSelectFile={handleSelectFile}
-              selectedFileId={selectedFile?.id}
-            />
+            {hasActiveSearch ? (
+              <div className="search-results">
+                {isSearching ? (
+                  <div className="sidebar-loading">Searching...</div>
+                ) : searchResults?.results && searchResults.results.length > 0 ? (
+                  searchResults.results.map((node) => (
+                    <div
+                      key={node.id}
+                      className={`tree-node-content ${selectedFile?.id === node.id ? 'selected' : ''}`}
+                      onClick={() => handleSelectFile(node)}
+                    >
+                      <span className="node-icon">📄</span>
+                      <span className="node-name">{node.name}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="sidebar-loading">No results found</div>
+                )}
+              </div>
+            ) : (
+              <FileTree
+                onSelectFile={handleSelectFile}
+                selectedFileId={selectedFile?.id}
+              />
+            )}
           </Suspense>
         </aside>
         <section className="content">
@@ -98,7 +129,7 @@ function AppContent() {
 
       <StatusBar
         totalCount={12}
-        filteredCount={activeFilters.length > 0 || _searchQuery ? 8 : 12}
+        filteredCount={hasActiveSearch ? (searchResults?.totalCount ?? 0) : 12}
         selectedCount={0}
       />
     </div>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useTransition, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -7,34 +7,26 @@ interface SearchBarProps {
 
 export function SearchBar({ onSearch, placeholder = 'Search documents...' }: SearchBarProps) {
   const [query, setQuery] = useState('');
-  const [isPending, startTransition] = useTransition();
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
+    setQuery(e.target.value);
   }, []);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      startTransition(() => {
-        onSearch(query);
-      });
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
+  const handleSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(query);
   }, [query, onSearch]);
 
   return (
-    <div className="search-bar">
+    <form className="search-bar" onSubmit={handleSubmit}>
       <input
         type="text"
         value={query}
         onChange={handleChange}
         placeholder={placeholder}
-        className={isPending ? 'pending' : ''}
       />
-      {isPending && <span className="search-indicator">...</span>}
-    </div>
+      <button type="submit">Search</button>
+    </form>
   );
 }
 
