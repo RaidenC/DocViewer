@@ -17,12 +17,6 @@ interface SearchApiResult {
   metadata: Record<string, unknown>;
 }
 
-interface SearchApiResponse {
-  results: SearchApiResult[];
-  totalCount: number;
-  hasMore: boolean;
-}
-
 function transformToTreeNode(doc: SearchApiResult): TreeNode {
   return {
     id: doc.id,
@@ -38,11 +32,14 @@ export function useSearch(filters: SearchFilters) {
   return useQuery<SearchResult>({
     queryKey: ['search', filters],
     queryFn: async () => {
-      const response = await searchDocuments(filters) as unknown as SearchApiResponse;
+      const response = await searchDocuments(filters);
+      // API returns array directly, not { results, totalCount, hasMore }
+      const results = Array.isArray(response) ? response : (response as unknown as SearchApiResult[]);
+      const arr = results as SearchApiResult[];
       return {
-        results: response.results.map(transformToTreeNode),
-        totalCount: response.totalCount,
-        hasMore: response.hasMore,
+        results: arr.map(transformToTreeNode),
+        totalCount: arr.length,
+        hasMore: false,
       };
     },
     staleTime: 60 * 1000,
