@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/DocViewer.Application.Tests/DocViewer.Application.Tests.csproj" />
+  </Folder>
   <Project Path="src/DocViewer.Api/DocViewer.Api.csproj" />
   <Project Path="src/DocViewer.Application/DocViewer.Application.csproj" />
   <Project Path="src/DocViewer.Domain/DocViewer.Domain.csproj" />
