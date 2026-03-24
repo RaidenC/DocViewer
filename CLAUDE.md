@@ -75,6 +75,30 @@ Use gstack for all web browsing and browser-based testing. Never use MCP tools l
 - `npx nx run docviewer-api:serve` - Start API server
 - `npx nx run docviewer-webapp:dev` - Start dev server
 
+## Testing
+
+See [TESTING.md](./TESTING.md) for detailed instructions.
+
+### Quick Commands
+```bash
+# Run all tests
+npx nx run-many -t test
+
+# Backend tests only
+dotnet test tests/DocViewer.Application.Tests
+
+# Frontend tests only
+cd src/DocViewer.WebApp && npm test
+```
+
+### Test Expectations
+- 80% test coverage is the goal
+- When writing new functions, write a corresponding test
+- When fixing a bug, write a regression test
+- When adding error handling, write a test that triggers the error
+- When adding a conditional (if/else, switch), write tests for BOTH paths
+- Never commit code that makes existing tests fail
+
 ## Hooks
 
 ### PostToolUse

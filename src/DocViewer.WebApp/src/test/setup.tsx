@@ -45,7 +45,7 @@ export function renderWithProviders(
 }
 
 // Re-export for convenience (disable lint for this)
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 export function __testUtils() {
   return {};
 }
