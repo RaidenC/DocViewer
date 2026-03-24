@@ -69,7 +69,9 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Install WebApp dependencies
-        run: cd src/DocViewer.WebApp && npm install --legacy-peer-deps
+        run: |
+          cd src/DocViewer.WebApp
+          npm install --legacy-peer-deps --force
 
       - name: Restore .NET projects
         run: dotnet restore DocViewer.slnx
