@@ -58,16 +58,29 @@ public class OpenSearchService : ISearchService
         // Full-text search query
         if (!string.IsNullOrWhiteSpace(query))
         {
+            // Use bool query to combine:
+            // 1. Wildcard on fileName for partial matches (e.g., "001" in "fax_statement_001.txt")
+            // 2. MultiMatch on other text fields (subject, content, sender)
             mustQueries.Add(q => q
-                .MultiMatch(mm => mm
-                    .Query(query)
-                    .Fields(f => f
-                        .Field(d => d.FileName)
-                        .Field(d => d.Subject)
-                        .Field(d => d.Content)
-                        .Field(d => d.Sender))
-                    .Type(TextQueryType.BestFields)
-                    .Fuzziness(Fuzziness.Auto)
+                .Bool(b => b
+                    .Should(
+                        // Wildcard search on filename for partial matches
+                        sh => sh
+                            .Wildcard(w => w
+                                .Field(f => f.FileName)
+                                .Value($"*{query.ToLowerInvariant()}*")),
+                        // Multi-match on other text fields
+                        sh => sh
+                            .MultiMatch(mm => mm
+                                .Query(query)
+                                .Fields(f => f
+                                    .Field(d => d.FileName)
+                                    .Field(d => d.Subject)
+                                    .Field(d => d.Content)
+                                    .Field(d => d.Sender))
+                                .Type(TextQueryType.BestFields))
+                    )
+                    .MinimumShouldMatch(1)
                 )
             );
         }
