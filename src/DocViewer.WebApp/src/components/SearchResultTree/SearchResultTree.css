@@ -1,0 +1,56 @@
+.search-result-tree {
+  padding: 8px;
+  font-family: monospace;
+  overflow: auto;
+  max-height: 100%;
+}
+
+.search-result-folder {
+  display: inline;
+  white-space: nowrap;
+}
+
+.folder-name {
+  color: #888;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.folder-name:hover {
+  background: #2d2d2d;
+  color: #ccc;
+}
+
+.separator {
+  color: #555;
+  margin: 0 8px;
+}
+
+.search-result-file {
+  display: inline;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.file-icon {
+  margin-right: 4px;
+}
+
+.file-name {
+  color: #ddd;
+  font-weight: 500;
+}
+
+.search-result-file:hover {
+  background: #2d2d2d;
+}
+
+.search-result-file.selected {
+  background: #094771;
+}
+
+.search-result-file.selected .file-name {
+  color: white;
+}
