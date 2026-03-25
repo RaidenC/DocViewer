@@ -42,6 +42,5 @@ export function useSearch(filters: SearchFilters) {
         hasMore: false,
       };
     },
-    staleTime: 60 * 1000,
   });
 }
