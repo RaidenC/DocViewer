@@ -6,6 +6,8 @@ import { SearchBar } from './components/Header/SearchBar';
 import FilterDropdown from './components/Header/FilterDropdown';
 import ActiveFilters from './components/Header/ActiveFilters';
 import StatusBar from './components/StatusBar';
+import { SearchResultTree } from './components/SearchResultTree/SearchResultTree';
+import { transformSearchResultsToTree } from './utils/transformSearchResultsToTree';
 import { useSearch } from './hooks/useSearch';
 import type { TreeNode, ActiveFilter } from './types';
 import './App.css';
@@ -100,16 +102,11 @@ function AppContent() {
                 {isSearching ? (
                   <div className="sidebar-loading">Searching...</div>
                 ) : searchResults?.results && searchResults.results.length > 0 ? (
-                  searchResults.results.map((node) => (
-                    <div
-                      key={node.id}
-                      className={`tree-node-content ${selectedFile?.id === node.id ? 'selected' : ''}`}
-                      onClick={() => handleSelectFile(node)}
-                    >
-                      <span className="node-icon">📄</span>
-                      <span className="node-name">{node.name}</span>
-                    </div>
-                  ))
+                  <SearchResultTree
+                    tree={transformSearchResultsToTree(searchResults.results)}
+                    onSelectFile={handleSelectFile}
+                    selectedFileId={selectedFile?.id}
+                  />
                 ) : (
                   <div className="sidebar-loading">No results found</div>
                 )}
