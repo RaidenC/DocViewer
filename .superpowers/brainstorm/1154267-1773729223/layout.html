@@ -1,0 +1,28 @@
+<h2>DocViewer UI - Layout Approach</h2>
+<p class="subtitle">Choose how the main content area should be organized</p>
+
+<div class="options">
+  <div class="option" data-choice="fixed" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Fixed Split Pane</h3>
+      <p>Left sidebar (280px) with file tree, right area for preview. Resizable divider between them.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="flexible" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Flexible Panel</h3>
+      <p>Both panels share space equally. Can collapse either panel to focus on the other.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="tabs" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Tab-based Preview</h3>
+      <p>Tree view takes full width. Clicking a file opens preview in a modal/overlay instead of split pane.</p>
+    </div>
+  </div>
+</div>

@@ -109,6 +109,19 @@ public class DocumentSyncService : BackgroundService
 
             var metadata = await _fileSystemService.GetDocumentMetadataAsync(relativePath);
 
+            // Read actual file content for indexing
+            string content = "";
+            try
+            {
+                using var stream = await _fileSystemService.GetFileContentAsync(relativePath);
+                using var reader = new StreamReader(stream);
+                content = await reader.ReadToEndAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not read file content for {Path}", relativePath);
+            }
+
             var document = new Document
             {
                 Id = relativePath.Replace(Path.DirectorySeparatorChar, '/'),
@@ -121,7 +134,7 @@ public class DocumentSyncService : BackgroundService
                 Date = metadata?.date ?? DateTime.Now,
                 Sender = metadata?.sender ?? "",
                 Subject = metadata?.subject ?? fileName,
-                Content = metadata?.content ?? ""
+                Content = content
             };
 
             return document;
