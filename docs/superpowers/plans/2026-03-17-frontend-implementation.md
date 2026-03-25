@@ -1506,7 +1506,7 @@ npm run dev
 - [ ] **Step 4: Verify API is running**
 
 ```bash
-curl http://localhost:5000/api/health
+curl http://localhost:5155/api/health
 ```
 
 - [ ] **Step 5: Commit final changes**
