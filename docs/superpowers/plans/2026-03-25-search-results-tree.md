@@ -66,6 +66,18 @@ describe('transformSearchResultsToTree', () => {
     const yearFolder = result[0].children?.[0].children?.[0];
     expect(yearFolder?.children?.length).toBe(2);
   });
+
+  it('should handle single file at root (empty path)', () => {
+    const flatResults: TreeNode[] = [
+      { id: 'rootfile.txt', name: 'rootfile.txt', path: '', type: 'file', channel: 'fax' },
+    ];
+
+    const result = transformSearchResultsToTree(flatResults);
+
+    // Single file should be returned as-is (no folder wrapping)
+    expect(result.length).toBe(1);
+    expect(result[0].name).toBe('rootfile.txt');
+  });
 });
 ```
 
@@ -81,9 +93,18 @@ Expected: FAIL with "transformSearchResultsToTree not defined"
 import type { TreeNode } from '../types';
 
 export function transformSearchResultsToTree(results: TreeNode[]): TreeNode[] {
+  // Handle empty path (single file at root)
+  const rootLevelFiles = results.filter(r => !r.path || r.path === '');
+  if (rootLevelFiles.length > 0 && rootLevelFiles.length === results.length) {
+    return rootLevelFiles;
+  }
+
   const root: TreeNode[] = [];
 
   for (const result of results) {
+    // Skip files at root level (already handled above)
+    if (!result.path || result.path === '') continue;
+
     // Get path segments, e.g., "fax/auto/2024/" -> ["fax", "auto", "2024"]
     const pathParts = result.path
       .split('/')
@@ -94,7 +115,6 @@ export function transformSearchResultsToTree(results: TreeNode[]): TreeNode[] {
 
     for (let i = 0; i < pathParts.length; i++) {
       const part = pathParts[i];
-      const isLastSegment = i === pathParts.length - 1;
 
       // Find existing folder at this level
       let folder = currentLevel.find(
@@ -227,8 +247,15 @@ interface SearchResultTreeProps {
 }
 
 export function SearchResultTree({ tree, onSelectFile, selectedFileId }: SearchResultTreeProps) {
+  // Build full paths for tooltip display
+  const getFullPath = (node: TreeNode): string => {
+    if (node.type === 'file') return node.path + node.name;
+    const childPath = node.children?.find(c => c.type === 'file');
+    return childPath ? childPath.path + childPath.name : node.path;
+  };
+
   return (
-    <div className="search-result-tree">
+    <div className="search-result-tree" title={tree.map(n => getFullPath(n)).join('\n')}>
       {tree.map((node) => (
         <SearchResultNode
           key={node.id}
@@ -313,6 +340,8 @@ function SearchResultNode({ node, onSelectFile, selectedFileId, isLast = true }:
 .search-result-tree {
   padding: 8px;
   font-family: monospace;
+  overflow: auto;
+  max-height: 100%;
 }
 
 .search-result-folder {
