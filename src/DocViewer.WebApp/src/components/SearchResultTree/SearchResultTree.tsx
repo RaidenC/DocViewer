@@ -27,9 +27,10 @@ interface SearchResultRowProps {
   node: TreeNode;
   onSelectFile: (node: TreeNode) => void;
   selectedFileId?: string;
+  depth?: number;
 }
 
-function SearchResultRow({ node, onSelectFile, selectedFileId }: SearchResultRowProps) {
+function SearchResultRow({ node, onSelectFile, selectedFileId, depth = 0 }: SearchResultRowProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   // Get the file node if this is a folder
@@ -57,6 +58,7 @@ function SearchResultRow({ node, onSelectFile, selectedFileId }: SearchResultRow
         className={`search-result-row ${isSelected ? 'selected' : ''}`}
         onClick={handleClick}
         title={fullPath}
+        style={{ paddingLeft: depth * 16 + 4 }}
       >
         {node.type === 'folder' ? (
           <>
@@ -83,6 +85,7 @@ function SearchResultRow({ node, onSelectFile, selectedFileId }: SearchResultRow
               node={child}
               onSelectFile={onSelectFile}
               selectedFileId={selectedFileId}
+              depth={depth + 1}
             />
           ))}
         </div>
