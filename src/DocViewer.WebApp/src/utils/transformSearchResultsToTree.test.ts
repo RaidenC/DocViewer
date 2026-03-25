@@ -1,4 +1,3 @@
-// src/DocViewer.WebApp/src/utils/transformSearchResultsToTree.test.ts
 import { transformSearchResultsToTree } from './transformSearchResultsToTree';
 import type { TreeNode } from '../types';
 
@@ -42,5 +41,18 @@ describe('transformSearchResultsToTree', () => {
     // Single file should be returned as-is (no folder wrapping)
     expect(result.length).toBe(1);
     expect(result[0].name).toBe('rootfile.txt');
+  });
+
+  it('should skip root-level files when mixed with nested files', () => {
+    const flatResults: TreeNode[] = [
+      { id: 'rootfile.txt', name: 'rootfile.txt', path: '', type: 'file', channel: 'fax' },
+      { id: 'fax/auto/2024/file.txt', name: 'file.txt', path: 'fax/auto/2024/', type: 'file', channel: 'fax' },
+    ];
+
+    const result = transformSearchResultsToTree(flatResults);
+
+    // Only nested file should be in tree, root file is skipped
+    expect(result[0].name).toBe('fax');
+    expect(result[0].children?.[0].children?.[0].children?.[0].name).toBe('file.txt');
   });
 });
