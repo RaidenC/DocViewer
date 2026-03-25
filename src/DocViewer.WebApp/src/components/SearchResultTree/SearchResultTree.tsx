@@ -9,17 +9,10 @@ interface SearchResultTreeProps {
 }
 
 export function SearchResultTree({ tree, onSelectFile, selectedFileId }: SearchResultTreeProps) {
-  // Build full paths for tooltip display
-  const getFullPath = (node: TreeNode): string => {
-    if (node.type === 'file') return node.path + node.name;
-    const childPath = node.children?.find(c => c.type === 'file');
-    return childPath ? childPath.path + childPath.name : node.path;
-  };
-
   return (
-    <div className="search-result-tree" title={tree.map(n => getFullPath(n)).join('\n')}>
+    <div className="search-result-tree">
       {tree.map((node) => (
-        <SearchResultNode
+        <SearchResultRow
           key={node.id}
           node={node}
           onSelectFile={onSelectFile}
@@ -30,67 +23,70 @@ export function SearchResultTree({ tree, onSelectFile, selectedFileId }: SearchR
   );
 }
 
-interface SearchResultNodeProps {
+interface SearchResultRowProps {
   node: TreeNode;
   onSelectFile: (node: TreeNode) => void;
   selectedFileId?: string;
 }
 
-function SearchResultNode({ node, onSelectFile, selectedFileId }: SearchResultNodeProps) {
+function SearchResultRow({ node, onSelectFile, selectedFileId }: SearchResultRowProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  if (node.type === 'file') {
-    const isSelected = selectedFileId === node.id;
-    return (
-      <div
-        className={`search-result-file ${isSelected ? 'selected' : ''}`}
-        onClick={() => onSelectFile(node)}
-      >
-        <span className="file-icon">📄</span>
-        <span className="file-name">{node.name}</span>
-      </div>
-    );
-  }
+  // Get the file node if this is a folder
+  const getFileNode = (n: TreeNode): TreeNode | undefined => {
+    if (n.type === 'file') return n;
+    const fileChild = n.children?.find(c => c.type === 'file');
+    return fileChild ? getFileNode(fileChild) : undefined;
+  };
 
-  // Folder node - render as horizontal path segment
-  const children = node.children || [];
-  const hasFileChildren = children.some(c => c.type === 'file');
-  const folderChildren = children.filter(c => c.type === 'folder');
+  const fileNode = getFileNode(node);
+  const isSelected = selectedFileId === (fileNode?.id || node.id);
+  const fullPath = fileNode ? fileNode.path + fileNode.name : node.path;
+
+  const handleClick = () => {
+    if (node.type === 'folder') {
+      setIsExpanded(!isExpanded);
+    } else {
+      onSelectFile(node);
+    }
+  };
 
   return (
-    <div className="search-result-folder">
-      <span
-        className={`folder-name ${isExpanded ? 'expanded' : ''}`}
-        onClick={() => setIsExpanded(!isExpanded)}
+    <>
+      <div
+        className={`search-result-row ${isSelected ? 'selected' : ''}`}
+        onClick={handleClick}
+        title={fullPath}
       >
-        {isExpanded ? '📂' : '📁'} {node.name}
-      </span>
+        {node.type === 'folder' ? (
+          <>
+            <span className="folder-name">
+              {isExpanded ? '▼' : '▶'} {node.name}
+            </span>
+            {isExpanded && (
+              <span className="separator">&gt;</span>
+            )}
+          </>
+        ) : (
+          <>
+            <span className="file-icon">📄</span>
+            <span className="file-name">{node.name}</span>
+          </>
+        )}
+      </div>
 
-      {isExpanded && (
-        <>
-          <span className="separator">&gt;</span>
-          {folderChildren.map((child, idx) => (
-            <SearchResultNode
+      {node.type === 'folder' && isExpanded && node.children && (
+        <div className="search-result-children">
+          {node.children.map((child) => (
+            <SearchResultRow
               key={child.id}
               node={child}
               onSelectFile={onSelectFile}
               selectedFileId={selectedFileId}
-              isLast={idx === folderChildren.length - 1 && !hasFileChildren}
             />
           ))}
-          {hasFileChildren && children
-            .filter(c => c.type === 'file')
-            .map((file, idx) => (
-              <SearchResultNode
-                key={file.id}
-                node={file}
-                onSelectFile={onSelectFile}
-                selectedFileId={selectedFileId}
-                isLast={idx === children.filter(c => c.type === 'file').length - 1}
-              />
-            ))}
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 }

@@ -1,56 +1,54 @@
 .search-result-tree {
-  padding: 8px;
+  padding: 4px;
   font-family: monospace;
   overflow: auto;
-  max-height: 100%;
 }
 
-.search-result-folder {
-  display: inline;
+.search-result-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  cursor: pointer;
   white-space: nowrap;
+}
+
+.search-result-row:hover {
+  background: #2d2d2d;
+}
+
+.search-result-row.selected {
+  background: #094771;
+}
+
+.search-result-row.selected .file-name {
+  color: white;
+}
+
+.search-result-row.selected .folder-name {
+  color: white;
 }
 
 .folder-name {
   color: #888;
   cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 3px;
 }
 
 .folder-name:hover {
-  background: #2d2d2d;
   color: #ccc;
 }
 
 .separator {
   color: #555;
-  margin: 0 8px;
-}
-
-.search-result-file {
-  display: inline;
-  cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 3px;
+  margin: 0 2px;
 }
 
 .file-icon {
-  margin-right: 4px;
+  margin-right: 2px;
 }
 
 .file-name {
   color: #ddd;
   font-weight: 500;
-}
-
-.search-result-file:hover {
-  background: #2d2d2d;
-}
-
-.search-result-file.selected {
-  background: #094771;
-}
-
-.search-result-file.selected .file-name {
-  color: white;
 }
