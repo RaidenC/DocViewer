@@ -33,16 +33,8 @@ interface SearchResultRowProps {
 function SearchResultRow({ node, onSelectFile, selectedFileId, depth = 0 }: SearchResultRowProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // Get the file node if this is a folder
-  const getFileNode = (n: TreeNode): TreeNode | undefined => {
-    if (n.type === 'file') return n;
-    const fileChild = n.children?.find(c => c.type === 'file');
-    return fileChild ? getFileNode(fileChild) : undefined;
-  };
-
-  const fileNode = getFileNode(node);
-  const isSelected = selectedFileId === (fileNode?.id || node.id);
-  const fullPath = fileNode ? fileNode.path + fileNode.name : node.path;
+  const isSelected = selectedFileId === node.id;
+  const fullPath = node.type === 'file' ? node.path + node.name : node.path;
 
   const handleClick = () => {
     if (node.type === 'folder') {
