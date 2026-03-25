@@ -14,8 +14,13 @@ export function transformSearchResultsToTree(results: TreeNode[]): TreeNode[] {
     // Skip files at root level (already handled above)
     if (!result.path || result.path === '') continue;
 
+    // Extract directory path by removing the filename
+    // result.path is the full path including filename (e.g., "fax/auto/2024/file.txt")
+    const lastSlashIndex = result.path.lastIndexOf('/');
+    const dirPath = lastSlashIndex >= 0 ? result.path.substring(0, lastSlashIndex + 1) : '';
+
     // Get path segments, e.g., "fax/auto/2024/" -> ["fax", "auto", "2024"]
-    const pathParts = result.path
+    const pathParts = dirPath
       .split('/')
       .filter(part => part.length > 0);
 
