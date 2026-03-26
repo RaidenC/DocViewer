@@ -155,4 +155,97 @@ public class DocumentsController : ControllerBase
             return StatusCode(500, "Failed to retrieve clients");
         }
     }
+
+    /// <summary>
+    /// Sync documents from file system to search index
+    /// </summary>
+    [HttpPost("sync")]
+    public async Task<IActionResult> Sync()
+    {
+        try
+        {
+            var dataRoot = _fileSystemService.GetDataRootPath();
+            var documents = new List<Document>();
+
+            // Scan each channel directory (email, fax, scan, ftp)
+            var channels = new[] { "email", "fax", "scan", "ftp" };
+            foreach (var channel in channels)
+            {
+                var channelPath = Path.Combine(dataRoot, channel);
+                if (!Directory.Exists(channelPath)) continue;
+
+                await ScanDirectory(channelPath, channel, "", documents);
+            }
+
+            if (documents.Count > 0)
+            {
+                await _searchService.IndexDocumentsAsync(documents);
+            }
+
+            _logger.LogInformation("Indexed {Count} documents", documents.Count);
+            return Ok(new { message = $"Indexed {documents.Count} documents" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to sync documents");
+            return StatusCode(500, "Failed to sync documents");
+        }
+    }
+
+    private async Task ScanDirectory(string basePath, string channel, string relativePath, List<Document> documents)
+    {
+        var fullPath = Path.Combine(basePath, relativePath);
+        if (!Directory.Exists(fullPath)) return;
+
+        var entries = Directory.GetFileSystemEntries(fullPath);
+        foreach (var entry in entries)
+        {
+            if (Directory.Exists(entry))
+            {
+                var relPath = Path.GetRelativePath(basePath, entry);
+                await ScanDirectory(basePath, channel, relPath, documents);
+            }
+            else if (Path.GetExtension(entry) != ".json")
+            {
+                var docRelativePath = Path.GetRelativePath(basePath, entry).Replace(Path.DirectorySeparatorChar, '/');
+                var parts = docRelativePath.Split('/');
+
+                if (parts.Length < 3) continue;
+
+                var client = parts[0];
+                var year = parts[1];
+                var month = parts[2];
+                var fileName = Path.GetFileNameWithoutExtension(parts[^1]);
+
+                var metadata = await _fileSystemService.GetDocumentMetadataAsync(docRelativePath);
+
+                string content = "";
+                try
+                {
+                    using var stream = await _fileSystemService.GetFileContentAsync(docRelativePath);
+                    using var reader = new StreamReader(stream);
+                    content = await reader.ReadToEndAsync();
+                }
+                catch { }
+
+                var doc = new Document
+                {
+                    Id = docRelativePath,
+                    FileName = Path.GetFileName(entry),
+                    FilePath = docRelativePath,
+                    Channel = channel,
+                    Client = client,
+                    Year = int.TryParse(year, out var y) ? y : 0,
+                    Month = month,
+                    Date = metadata?.date ?? DateTime.Now,
+                    Sender = metadata?.sender ?? "",
+                    clientName = metadata?.clientName ?? "",
+                    Subject = metadata?.subject ?? fileName,
+                    Content = content
+                };
+
+                documents.Add(doc);
+            }
+        }
+    }
 }
