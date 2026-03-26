@@ -4,6 +4,7 @@ import { FileTree } from './components/FileTree/FileTree';
 import { PreviewPane } from './components/Preview/PreviewPane';
 import { SearchBar } from './components/Header/SearchBar';
 import FilterDropdown from './components/Header/FilterDropdown';
+import DateFilter from './components/Header/DateFilter';
 import ActiveFilters from './components/Header/ActiveFilters';
 import StatusBar from './components/StatusBar';
 import { SearchResultTree } from './components/SearchResultTree/SearchResultTree';
@@ -26,11 +27,15 @@ function AppContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [channelFilter, setChannelFilter] = useState<string>('');
   const [clientFilter, setClientFilter] = useState<string>('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   const { data: searchResults, isLoading: isSearching } = useSearch({
     q: searchQuery,
     channel: channelFilter || undefined,
     client: clientFilter || undefined,
+    fromDate: fromDate || undefined,
+    toDate: toDate || undefined,
   });
 
   const handleSelectFile = useCallback((node: TreeNode) => {
@@ -42,21 +47,32 @@ function AppContent() {
   const activeFilters: ActiveFilter[] = [];
   if (channelFilter) activeFilters.push({ key: 'channel', value: channelFilter, label: `Channel: ${channelFilter}` });
   if (clientFilter) activeFilters.push({ key: 'client', value: clientFilter, label: `Client: ${clientFilter}` });
+  if (fromDate || toDate) {
+    const label = fromDate && toDate
+      ? `Date: ${fromDate} to ${toDate}`
+      : fromDate
+        ? `Date: ${fromDate} onwards`
+        : `Date: up to ${toDate}`;
+    activeFilters.push({ key: 'date', value: 'date', label });
+  }
 
   const handleRemoveFilter = (key: string) => {
     switch (key) {
       case 'channel': setChannelFilter(''); break;
       case 'client': setClientFilter(''); break;
+      case 'date': setFromDate(''); setToDate(''); break;
     }
   };
 
   const handleClearAll = () => {
     setChannelFilter('');
     setClientFilter('');
+    setFromDate('');
+    setToDate('');
     setSearchQuery('');
   };
 
-  const hasActiveSearch = searchQuery || channelFilter || clientFilter;
+  const hasActiveSearch = searchQuery || channelFilter || clientFilter || fromDate || toDate;
 
   return (
     <div className="app">
@@ -84,6 +100,12 @@ function AppContent() {
               ]}
               value={clientFilter}
               onChange={(v) => setClientFilter(v as string)}
+            />
+            <DateFilter
+              fromDate={fromDate}
+              toDate={toDate}
+              onFromDateChange={setFromDate}
+              onToDateChange={setToDate}
             />
           </div>
         </div>
