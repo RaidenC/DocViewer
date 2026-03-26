@@ -137,4 +137,22 @@ public class DocumentsController : ControllerBase
             return StatusCode(500, new { error = "Failed to retrieve metadata" });
         }
     }
+
+    /// <summary>
+    /// Get unique client names
+    /// </summary>
+    [HttpGet("clients")]
+    public async Task<ActionResult<List<string>>> GetClients()
+    {
+        try
+        {
+            var clients = await _searchService.GetClientNamesAsync();
+            return Ok(clients);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get clients");
+            return StatusCode(500, "Failed to retrieve clients");
+        }
+    }
 }
