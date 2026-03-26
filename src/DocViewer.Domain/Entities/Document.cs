@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace DocViewer.Domain.Entities;
 
 public class Document
@@ -26,8 +28,9 @@ public enum DocumentChannel
 
 public class DocumentMetadata
 {
+    [JsonPropertyName("receive_time")]
+    public DateTime? date { get; set; }
     public string? sender { get; set; }
     public string? subject { get; set; }
-    public DateTime? date { get; set; }
     public string? content { get; set; }
 }
