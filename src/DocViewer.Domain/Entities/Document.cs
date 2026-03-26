@@ -35,4 +35,6 @@ public class DocumentMetadata
     public string? sender { get; set; }
     public string? subject { get; set; }
     public string? content { get; set; }
+    [JsonPropertyName("client_name")]
+    public string? clientName { get; set; }
 }
