@@ -41,9 +41,10 @@ File: `src/DocViewer.WebApp/src/App.tsx`
 - Pass to useSearch hook
 - Show in ActiveFilters
 
-### 4. Frontend - Update types
+### 4. Frontend - Update types (ALREADY COMPLETE)
 File: `src/DocViewer.WebApp/src/types/index.ts`
 
+Types already exist:
 - `fromDate?: string`
 - `toDate?: string`
 
