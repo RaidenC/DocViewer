@@ -16,6 +16,7 @@ public interface ISearchService
     Task IndexDocumentAsync(Document document);
     Task IndexDocumentsAsync(IEnumerable<Document> documents);
     Task<bool> IsHealthyAsync();
+    Task<List<string>> GetClientNamesAsync();
 }
 
 public class SearchRequest
