@@ -121,11 +121,11 @@ public class OpenSearchService : ISearchService
             );
         }
 
-        // Client filter
+        // Client filter (using clientName from JSON metadata)
         if (!string.IsNullOrWhiteSpace(client))
         {
             filterQueries.Add(q => q
-                .Term(t => t.Field(f => f.Client).Value(client.ToLowerInvariant()))
+                .Term(t => t.Field(f => f.clientName).Value(client))
             );
         }
 

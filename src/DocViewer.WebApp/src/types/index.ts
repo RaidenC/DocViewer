@@ -31,6 +31,7 @@ export interface SearchFilters {
   q?: string;
   channel?: string;
   client?: string;
+  clientName?: string;
   fromDate?: string;
   toDate?: string;
   page?: number;

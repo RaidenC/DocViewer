@@ -1,9 +1,10 @@
-import { useState, useCallback, Suspense } from 'react';
+import { useState, useCallback, Suspense, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FileTree } from './components/FileTree/FileTree';
 import { PreviewPane } from './components/Preview/PreviewPane';
 import { SearchBar } from './components/Header/SearchBar';
 import FilterDropdown from './components/Header/FilterDropdown';
+import SearchableSelect from './components/Header/SearchableSelect';
 import DateFilter from './components/Header/DateFilter';
 import ActiveFilters from './components/Header/ActiveFilters';
 import StatusBar from './components/StatusBar';
@@ -27,6 +28,7 @@ function AppContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [channelFilter, setChannelFilter] = useState<string>('');
   const [clientFilter, setClientFilter] = useState<string>('');
+  const [clientOptions, setClientOptions] = useState<{ value: string; label: string }[]>([]);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
@@ -37,6 +39,15 @@ function AppContent() {
     fromDate: fromDate || undefined,
     toDate: toDate || undefined,
   });
+
+  useEffect(() => {
+    fetch('/api/documents/clients')
+      .then(res => res.json())
+      .then((clients: string[]) => {
+        setClientOptions(clients.map(c => ({ value: c, label: c })));
+      })
+      .catch(console.error);
+  }, []);
 
   const handleSelectFile = useCallback((node: TreeNode) => {
     if (node.type === 'file') {
@@ -92,14 +103,12 @@ function AppContent() {
               value={channelFilter}
               onChange={(v) => setChannelFilter(v as string)}
             />
-            <FilterDropdown
+            <SearchableSelect
               label="Client"
-              options={[
-                { value: 'auto', label: 'Auto' },
-                { value: 'mortgage', label: 'Mortgage' },
-              ]}
+              options={clientOptions}
               value={clientFilter}
-              onChange={(v) => setClientFilter(v as string)}
+              onChange={setClientFilter}
+              placeholder="Search clients..."
             />
             <DateFilter
               fromDate={fromDate}
