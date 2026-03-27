@@ -46,7 +46,7 @@ public class OpenSearchService : ISearchService
             .Size(0)
             .Aggregations(a => a
                 .Terms("clients", t => t
-                    .Field(f => f.clientName)
+                    .Field(f => f.clientName.Suffix("keyword"))
                     .Size(100)
                 )
             )
@@ -141,7 +141,7 @@ public class OpenSearchService : ISearchService
         if (!string.IsNullOrWhiteSpace(client))
         {
             filterQueries.Add(q => q
-                .Term(t => t.Field(f => f.clientName).Value(client))
+                .Term(t => t.Field(f => f.clientName.Suffix("keyword")).Value(client))
             );
         }
 
@@ -293,7 +293,7 @@ public class OpenSearchService : ISearchService
         if (!string.IsNullOrWhiteSpace(client))
         {
             filterQueries.Add(q => q
-                .Term(t => t.Field(f => f.clientName).Value(client))
+                .Term(t => t.Field(f => f.clientName.Suffix("keyword")).Value(client))
             );
         }
 
