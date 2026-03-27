@@ -133,6 +133,7 @@ public class DocumentSyncService : BackgroundService
                 Month = month,
                 Date = metadata?.date ?? DateTime.Now,
                 Sender = metadata?.sender ?? "",
+                clientName = metadata?.clientName ?? "",
                 Subject = metadata?.subject ?? fileName,
                 Content = content
             };

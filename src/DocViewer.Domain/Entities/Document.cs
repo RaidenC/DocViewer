@@ -9,6 +9,8 @@ public class Document
     public string FilePath { get; set; } = string.Empty;
     public string Channel { get; set; } = string.Empty;
     public string Client { get; set; } = string.Empty;
+    [JsonPropertyName("client_name")]
+    public string? clientName { get; set; }
     public int Year { get; set; }
     public string Month { get; set; } = string.Empty;
     public DateTime Date { get; set; }
@@ -33,4 +35,6 @@ public class DocumentMetadata
     public string? sender { get; set; }
     public string? subject { get; set; }
     public string? content { get; set; }
+    [JsonPropertyName("client_name")]
+    public string? clientName { get; set; }
 }

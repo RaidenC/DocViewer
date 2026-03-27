@@ -39,6 +39,34 @@ public class OpenSearchService : ISearchService
         }
     }
 
+    public async Task<List<string>> GetClientNamesAsync()
+    {
+        var response = await _client.SearchAsync<Document>(s => s
+            .Index(IndexName)
+            .Size(0)
+            .Aggregations(a => a
+                .Terms("clients", t => t
+                    .Field(f => f.clientName)
+                    .Size(100)
+                )
+            )
+        );
+
+        if (!response.IsValid)
+        {
+            _logger.LogError("OpenSearch aggregation failed: {Error}", response.DebugInformation);
+            return new List<string>();
+        }
+
+        return response.Aggregations
+            .Terms("clients")
+            .Buckets
+            .Select(b => b.Key.ToString())
+            .Where(c => !string.IsNullOrEmpty(c))
+            .OrderBy(c => c)
+            .ToList();
+    }
+
     public async Task<List<Document>> SearchDocumentsAsync(
         string? query,
         string? channel,
@@ -93,11 +121,11 @@ public class OpenSearchService : ISearchService
             );
         }
 
-        // Client filter
+        // Client filter (using clientName from JSON metadata)
         if (!string.IsNullOrWhiteSpace(client))
         {
             filterQueries.Add(q => q
-                .Term(t => t.Field(f => f.Client).Value(client.ToLowerInvariant()))
+                .Term(t => t.Field(f => f.clientName).Value(client))
             );
         }
 
