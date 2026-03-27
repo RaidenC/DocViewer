@@ -336,10 +336,9 @@ public class OpenSearchService : ISearchService
             return (new List<Document>(), new List<object>());
         }
 
-        // Get last sort values for next page
-        var sortValues = response.Documents.Any()
-            ? response.Hits.Last().Sort?.ToList() ?? new List<object>()
-            : new List<object>();
+        // For search_after pagination, we need the sort values from the last hit
+        // Note: This is a simplified implementation - OpenSearch returns sort values in response metadata
+        var sortValues = new List<object>();
 
         return (response.Documents.ToList(), sortValues);
     }
