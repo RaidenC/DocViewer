@@ -9,6 +9,7 @@ import DateFilter from './components/Header/DateFilter';
 import ActiveFilters from './components/Header/ActiveFilters';
 import StatusBar from './components/StatusBar';
 import { SearchResultTree } from './components/SearchResultTree/SearchResultTree';
+import BenchmarkPanel from './components/Benchmark/BenchmarkPanel';
 import { transformSearchResultsToTree } from './utils/transformSearchResultsToTree';
 import { useSearch } from './hooks/useSearch';
 import type { TreeNode, ActiveFilter } from './types';
@@ -154,6 +155,8 @@ function AppContent() {
           <PreviewPane selectedFile={selectedFile} />
         </section>
       </main>
+
+      <BenchmarkPanel />
 
       <StatusBar
         totalCount={12}

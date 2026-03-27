@@ -36,6 +36,7 @@ builder.Services.AddMediatR(cfg =>
 // Services
 builder.Services.AddTransient<IFileSystemService, FileSystemService>();
 builder.Services.AddTransient<ISearchService, OpenSearchService>();
+builder.Services.AddScoped<IDataGenerator, DataGenerator>();
 builder.Services.AddHostedService<DocumentSyncService>();
 
 // Configuration - load from appsettings.json
