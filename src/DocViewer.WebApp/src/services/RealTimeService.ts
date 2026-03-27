@@ -1,5 +1,5 @@
-import { HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/signalr';
-import { useEffect, useState } from 'react';
+import { HubConnectionBuilder, HubConnectionState, LogLevel, HubConnection } from '@microsoft/signalr';
+import { useEffect, useState, useRef } from 'react';
 
 export interface IndexingProgress {
   documentsGenerated: number;
@@ -17,7 +17,7 @@ export interface SearchActivity {
 const HUB_URL = 'http://localhost:5217/hubs/documents';
 
 export function useRealTime() {
-  const [connection, setConnection] = useState<any>(null);
+  const connectionRef = useRef<HubConnection | null>(null);
   const [progress, setProgress] = useState<IndexingProgress | null>(null);
   const [activityFeed, setActivityFeed] = useState<SearchActivity[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<HubConnectionState>(HubConnectionState.Disconnected);
@@ -28,6 +28,8 @@ export function useRealTime() {
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Warning)
       .build();
+
+    connectionRef.current = hubConnection;
 
     // Listen for indexing progress
     hubConnection.on('IndexingProgress', (data: IndexingProgress) => {
@@ -47,16 +49,14 @@ export function useRealTime() {
       .then(() => setConnectionStatus(HubConnectionState.Connected))
       .catch(err => console.error('SignalR connection failed:', err));
 
-    setConnection(hubConnection);
-
     return () => {
       hubConnection.stop();
     };
   }, []);
 
   const broadcastSearch = async (query: string, results: number) => {
-    if (connection?.state === HubConnectionState.Connected) {
-      await connection.invoke('BroadcastSearch', query, results);
+    if (connectionRef.current?.state === HubConnectionState.Connected) {
+      await connectionRef.current.invoke('BroadcastSearch', query, results);
     }
   };
 
