@@ -1,6 +1,8 @@
 using DocViewer.Application.Interfaces;
+using DocViewer.Api.Hubs;
 using DocViewer.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace DocViewer.Api.Controllers;
 
@@ -11,15 +13,18 @@ public class DocumentsController : ControllerBase
     private readonly IFileSystemService _fileSystemService;
     private readonly ISearchService _searchService;
     private readonly ILogger<DocumentsController> _logger;
+    private readonly IHubContext<DocumentHub> _hubContext;
 
     public DocumentsController(
         IFileSystemService fileSystemService,
         ISearchService searchService,
-        ILogger<DocumentsController> logger)
+        ILogger<DocumentsController> logger,
+        IHubContext<DocumentHub> hubContext)
     {
         _fileSystemService = fileSystemService;
         _searchService = searchService;
         _logger = logger;
+        _hubContext = hubContext;
     }
 
     /// <summary>
@@ -62,6 +67,18 @@ public class DocumentsController : ControllerBase
         {
             var documents = await _searchService.SearchDocumentsAsync(
                 q, channel, client, fromDate, toDate, page, pageSize);
+
+            // Broadcast search activity to all connected clients
+            if (_hubContext != null && !string.IsNullOrWhiteSpace(q))
+            {
+                await _hubContext.Clients.All.SendAsync("SearchPerformed", new
+                {
+                    User = "User",
+                    Query = q,
+                    Results = documents?.Count ?? 0,
+                    Timestamp = DateTime.UtcNow
+                });
+            }
 
             return Ok(documents);
         }
