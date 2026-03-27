@@ -11,7 +11,6 @@ public class DataGenerator : IDataGenerator
     private readonly IOpenSearchClient _client;
     private readonly ILogger<DataGenerator> _logger;
     private readonly GenerateProgress _progress = new();
-    private static readonly Random _random = new();
     private static readonly object _lock = new();
 
     private const string IndexName = "documents";
@@ -175,7 +174,7 @@ public class DataGenerator : IDataGenerator
                         _progress.DocumentsGenerated = documentsGenerated;
 
                         // Report progress every 50K documents
-                        if (documentsGenerated % 50000 < batchSize)
+                        if (documentsGenerated % 50000 == 0 || documentsGenerated == count)
                         {
                             _logger.LogInformation("Generated {Count} / {Total} documents", documentsGenerated, count);
                             progress?.Report(documentsGenerated);
@@ -224,12 +223,12 @@ public class DataGenerator : IDataGenerator
     private Document GenerateDocument(int index)
     {
         var channel = GetRandomChannel();
-        var clientName = ClientNames[_random.Next(ClientNames.Length)];
+        var clientName = ClientNames[Random.Shared.Next(ClientNames.Length)];
         var year = GetRandomYear();
-        var month = GetRandomMonth();
+        var month = GetRandomMonth(year);
         var date = GetRandomDate(year);
-        var sender = Senders[_random.Next(Senders.Length)];
-        var subject = string.Format(Subjects[_random.Next(Subjects.Length)], index + 1);
+        var sender = Senders[Random.Shared.Next(Senders.Length)];
+        var subject = string.Format(Subjects[Random.Shared.Next(Subjects.Length)], index + 1);
         var content = GenerateLoremIpsum();
         var fileExtension = GetRandomFileExtension(channel);
 
@@ -254,37 +253,37 @@ public class DataGenerator : IDataGenerator
     private string GetRandomChannel()
     {
         // 25% each: fax, email, scan, ftp
-        return Channels[_random.Next(Channels.Length)];
+        return Channels[Random.Shared.Next(Channels.Length)];
     }
 
     private int GetRandomYear()
     {
         // 2023(30%), 2024(40%), 2025(30%)
-        var value = _random.Next(100);
+        var value = Random.Shared.Next(100);
         if (value < 30) return 2023;
         if (value < 70) return 2024;
         return 2025;
     }
 
-    private string GetRandomMonth()
+    private string GetRandomMonth(int year)
     {
-        // 2024-01 to 2024-12
-        var month = _random.Next(1, 13);
-        return $"2024-{month:D2}";
+        // Generate month based on the given year
+        var month = Random.Shared.Next(1, 13);
+        return $"{year}-{month:D2}";
     }
 
     private DateTime GetRandomDate(int year)
     {
         var start = new DateTime(year, 1, 1);
         var daysInYear = DateTime.IsLeapYear(year) ? 366 : 365;
-        return start.AddDays(_random.Next(daysInYear));
+        return start.AddDays(Random.Shared.Next(daysInYear));
     }
 
     private string GetRandomFileExtension(string channel)
     {
         var (extensions, weights) = FileExtensionsByChannel[channel];
         var totalWeight = weights.Sum();
-        var randomValue = _random.Next(totalWeight);
+        var randomValue = Random.Shared.Next(totalWeight);
         var cumulative = 0;
 
         for (var i = 0; i < extensions.Length; i++)
@@ -301,7 +300,7 @@ public class DataGenerator : IDataGenerator
 
     private string GenerateLoremIpsum()
     {
-        var length = _random.Next(500, 2001);
+        var length = Random.Shared.Next(500, 2001);
         var words = new[] { "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
             "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua",
             "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris",
@@ -313,11 +312,11 @@ public class DataGenerator : IDataGenerator
         var result = new List<string>();
         while (result.Sum(w => w.Length + 1) < length)
         {
-            result.Add(words[_random.Next(words.Length)]);
+            result.Add(words[Random.Shared.Next(words.Length)]);
         }
 
         var text = string.Join(" ", result);
-        return char.ToUpper(text[0]) + text.Substring(1) + ".";
+        return char.ToUpper(text[0]) + text[1..] + ".";
     }
 
     private async Task IndexBatchAsync(List<Document> documents, CancellationToken cancellationToken)
