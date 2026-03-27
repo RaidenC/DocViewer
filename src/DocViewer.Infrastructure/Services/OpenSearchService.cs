@@ -46,7 +46,7 @@ public class OpenSearchService : ISearchService
             .Size(0)
             .Aggregations(a => a
                 .Terms("clients", t => t
-                    .Field(f => f.clientName)
+                    .Field("client_name.keyword")
                     .Size(100)
                 )
             )
@@ -78,7 +78,11 @@ public class OpenSearchService : ISearchService
     {
         var searchDescriptor = new SearchDescriptor<Document>()
             .From((page - 1) * pageSize)
-            .Size(pageSize);
+            .Size(pageSize)
+            .Sort(s => s
+                .Field(f => f.Date, SortOrder.Descending)
+                .Field(f => f.Id, SortOrder.Ascending)
+            );
 
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> mustQueries = new();
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> filterQueries = new();
@@ -125,7 +129,7 @@ public class OpenSearchService : ISearchService
         if (!string.IsNullOrWhiteSpace(client))
         {
             filterQueries.Add(q => q
-                .Term(t => t.Field(f => f.clientName).Value(client))
+                .Term(t => t.Field("client_name.keyword").Value(client))
             );
         }
 
