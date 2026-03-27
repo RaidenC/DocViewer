@@ -38,3 +38,17 @@ public class SearchResult
     public int PageSize { get; set; }
     public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
 }
+
+public interface IDataGenerator
+{
+    Task<int> GenerateDocumentsAsync(int count, IProgress<int>? progress = null, CancellationToken cancellationToken = default);
+    Task<GenerateProgress> GetProgressAsync();
+}
+
+public class GenerateProgress
+{
+    public int TotalDocuments { get; set; }
+    public int DocumentsGenerated { get; set; }
+    public bool IsComplete { get; set; }
+    public string? Error { get; set; }
+}
