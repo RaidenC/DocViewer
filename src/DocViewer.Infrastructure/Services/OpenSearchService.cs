@@ -83,12 +83,18 @@ public class OpenSearchService : ISearchService
         // _source field filtering - only return needed fields to reduce payload
         searchDescriptor.Source(s => s
             .Includes(i => i
-                .Fields("id", "fileName", "filePath", "channel", "clientName", "date")
+                .Fields("id", "fileName", "filePath", "channel", "client_name", "date")
             )
         );
 
         // Enable request cache for filter queries
         searchDescriptor.RequestCache(true);
+
+        // Add sort for consistent pagination and search_after support
+        searchDescriptor.Sort(s => s
+            .Field(f => f.Date, SortOrder.Descending)
+            .Field(f => f.Id, SortOrder.Ascending)
+        );
 
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> mustQueries = new();
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> filterQueries = new();
@@ -234,12 +240,18 @@ public class OpenSearchService : ISearchService
         // _source field filtering - only return needed fields to reduce payload
         searchDescriptor.Source(s => s
             .Includes(i => i
-                .Fields("id", "fileName", "filePath", "channel", "clientName", "date")
+                .Fields("id", "fileName", "filePath", "channel", "client_name", "date")
             )
         );
 
         // Enable request cache for filter queries
         searchDescriptor.RequestCache(true);
+
+        // Add sort for consistent pagination and search_after support
+        searchDescriptor.Sort(s => s
+            .Field(f => f.Date, SortOrder.Descending)
+            .Field(f => f.Id, SortOrder.Ascending)
+        );
 
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> mustQueries = new();
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> filterQueries = new();
