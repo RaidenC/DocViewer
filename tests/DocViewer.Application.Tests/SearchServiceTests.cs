@@ -16,6 +16,58 @@ public class SearchServiceTests
     }
 
     /// <summary>
+    /// Test: GetClientNamesAsync returns unique client names from search service
+    /// </summary>
+    [Fact]
+    public async Task GetClientNamesAsync_ReturnsUniqueClientNames()
+    {
+        // Arrange
+        var expectedClients = new List<string>
+        {
+            "XYZ Motors",
+            "Smith Family Trust",
+            "Fleet Solutions Inc"
+        };
+
+        _mockSearchService
+            .Setup(s => s.GetClientNamesAsync())
+            .ReturnsAsync(expectedClients);
+
+        var service = _mockSearchService.Object;
+
+        // Act
+        var result = await service.GetClientNamesAsync();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(3);
+        result.Should().Contain("XYZ Motors");
+        result.Should().Contain("Smith Family Trust");
+        result.Should().Contain("Fleet Solutions Inc");
+    }
+
+    /// <summary>
+    /// Test: GetClientNamesAsync returns empty list when no clients exist
+    /// </summary>
+    [Fact]
+    public async Task GetClientNamesAsync_ReturnsEmptyList_WhenNoClients()
+    {
+        // Arrange
+        _mockSearchService
+            .Setup(s => s.GetClientNamesAsync())
+            .ReturnsAsync(new List<string>());
+
+        var service = _mockSearchService.Object;
+
+        // Act
+        var result = await service.GetClientNamesAsync();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
+    /// <summary>
     /// Test: SearchDocumentsAsync with query filters results by text
     /// </summary>
     [Fact]
