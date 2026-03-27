@@ -1,4 +1,4 @@
-import { useRealTime, IndexingProgress } from '../services/RealTimeService';
+import { useRealTime } from '../services/RealTimeService';
 
 export default function LiveProgress() {
   const { progress, connectionStatus } = useRealTime();
