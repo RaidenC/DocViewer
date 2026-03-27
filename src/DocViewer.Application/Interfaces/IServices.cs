@@ -13,6 +13,7 @@ public interface IFileSystemService
 public interface ISearchService
 {
     Task<List<Document>> SearchDocumentsAsync(string? query, string? channel, string? client, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20);
+    Task<(List<Document> Documents, List<object> SortValues)> SearchDocumentsWithSearchAfterAsync(string? query, string? channel, string? client, DateTime? fromDate, DateTime? toDate, int pageSize = 20, List<object>? searchAfter = null);
     Task IndexDocumentAsync(Document document);
     Task IndexDocumentsAsync(IEnumerable<Document> documents);
     Task<bool> IsHealthyAsync();

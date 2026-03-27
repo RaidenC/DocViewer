@@ -80,6 +80,16 @@ public class OpenSearchService : ISearchService
             .From((page - 1) * pageSize)
             .Size(pageSize);
 
+        // _source field filtering - only return needed fields to reduce payload
+        searchDescriptor.Source(s => s
+            .Includes(i => i
+                .Fields("id", "fileName", "filePath", "channel", "clientName", "date")
+            )
+        );
+
+        // Enable request cache for filter queries
+        searchDescriptor.RequestCache(true);
+
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> mustQueries = new();
         List<Func<QueryContainerDescriptor<Document>, QueryContainer>> filterQueries = new();
 
@@ -201,5 +211,124 @@ public class OpenSearchService : ISearchService
         }
 
         _logger.LogInformation("Indexed {Count} documents", docList.Count);
+    }
+
+    public async Task<(List<Document> Documents, List<object> SortValues)> SearchDocumentsWithSearchAfterAsync(
+        string? query,
+        string? channel,
+        string? client,
+        DateTime? fromDate,
+        DateTime? toDate,
+        int pageSize = 20,
+        List<object>? searchAfter = null)
+    {
+        var searchDescriptor = new SearchDescriptor<Document>()
+            .Size(pageSize);
+
+        // Add search_after for deep pagination
+        if (searchAfter != null && searchAfter.Count > 0)
+        {
+            searchDescriptor.SearchAfter(searchAfter);
+        }
+
+        // _source field filtering - only return needed fields to reduce payload
+        searchDescriptor.Source(s => s
+            .Includes(i => i
+                .Fields("id", "fileName", "filePath", "channel", "clientName", "date")
+            )
+        );
+
+        // Enable request cache for filter queries
+        searchDescriptor.RequestCache(true);
+
+        List<Func<QueryContainerDescriptor<Document>, QueryContainer>> mustQueries = new();
+        List<Func<QueryContainerDescriptor<Document>, QueryContainer>> filterQueries = new();
+
+        // Full-text search query
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            mustQueries.Add(q => q
+                .Bool(b => b
+                    .Should(
+                        sh => sh
+                            .Wildcard(w => w
+                                .Field(f => f.FileName)
+                                .Value($"*{query.ToLowerInvariant()}*")),
+                        sh => sh
+                            .MultiMatch(mm => mm
+                                .Query(query)
+                                .Fields(f => f
+                                    .Field(d => d.FileName)
+                                    .Field(d => d.Subject)
+                                    .Field(d => d.Content)
+                                    .Field(d => d.Sender))
+                                .Type(TextQueryType.BestFields))
+                    )
+                    .MinimumShouldMatch(1)
+                )
+            );
+        }
+
+        // Channel filter
+        if (!string.IsNullOrWhiteSpace(channel))
+        {
+            filterQueries.Add(q => q
+                .Term(t => t.Field(f => f.Channel).Value(channel.ToLowerInvariant()))
+            );
+        }
+
+        // Client filter
+        if (!string.IsNullOrWhiteSpace(client))
+        {
+            filterQueries.Add(q => q
+                .Term(t => t.Field(f => f.clientName).Value(client))
+            );
+        }
+
+        // Date range filter
+        if (fromDate.HasValue || toDate.HasValue)
+        {
+            filterQueries.Add(q => q
+                .DateRange(dr => dr
+                    .Field(f => f.Date)
+                    .GreaterThanOrEquals(fromDate?.ToString("yyyy-MM-dd"))
+                    .LessThanOrEquals(toDate?.ToString("yyyy-MM-dd"))
+                )
+            );
+        }
+
+        // Build the query
+        if (mustQueries.Count > 0 || filterQueries.Count > 0)
+        {
+            searchDescriptor.Query(q => q
+                .Bool(b =>
+                {
+                    if (mustQueries.Count > 0)
+                        b.Must(mustQueries.ToArray());
+                    if (filterQueries.Count > 0)
+                        b.Filter(filterQueries.ToArray());
+                    return b;
+                })
+            );
+        }
+        else
+        {
+            searchDescriptor.Query(q => q.MatchAll(ma => ma));
+        }
+
+        var response = await _client.SearchAsync<Document>(searchDescriptor);
+
+        if (!response.IsValid)
+        {
+            _logger.LogError("OpenSearch query failed: {Error}", response.DebugInformation);
+            return (new List<Document>(), new List<object>());
+        }
+
+        // Get last sort values for next page
+        var sortValues = response.Documents.Any()
+            ? response.Hits.Last().Sort?.ToList() ?? new List<object>()
+            : new List<object>();
+
+        return (response.Documents.ToList(), sortValues);
     }
 }
