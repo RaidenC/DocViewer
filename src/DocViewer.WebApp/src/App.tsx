@@ -11,6 +11,8 @@ import StatusBar from './components/StatusBar';
 import { SearchResultTree } from './components/SearchResultTree/SearchResultTree';
 import { transformSearchResultsToTree } from './utils/transformSearchResultsToTree';
 import { useSearch } from './hooks/useSearch';
+import LiveProgress from './components/LiveProgress';
+import ActivityFeed from './components/ActivityFeed';
 import type { TreeNode, ActiveFilter } from './types';
 import './App.css';
 
@@ -153,6 +155,9 @@ function AppContent() {
         <section className="content">
           <PreviewPane selectedFile={selectedFile} />
         </section>
+
+        <LiveProgress />
+        <ActivityFeed />
       </main>
 
       <StatusBar
