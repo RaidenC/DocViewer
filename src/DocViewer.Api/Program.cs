@@ -1,4 +1,5 @@
 using DocViewer.Api.Hubs;
+using DocViewer.Api.Services;
 using DocViewer.Application.Interfaces;
 using DocViewer.Infrastructure.Services;
 using Serilog;
@@ -41,6 +42,7 @@ builder.Services.AddSignalR();
 // Services
 builder.Services.AddTransient<IFileSystemService, FileSystemService>();
 builder.Services.AddTransient<ISearchService, OpenSearchService>();
+builder.Services.AddTransient<DataGenerator>();
 builder.Services.AddHostedService<DocumentSyncService>();
 
 // Configuration - load from appsettings.json
