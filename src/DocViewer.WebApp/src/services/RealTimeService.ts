@@ -14,7 +14,8 @@ export interface SearchActivity {
   timestamp: string;
 }
 
-const HUB_URL = 'http://localhost:5217/hubs/documents';
+// Use local API for development, tai-portal gateway for production
+const HUB_URL = import.meta.env.VITE_SIGNALR_URL || 'http://localhost:5155/hubs/documents';
 
 export function useRealTime() {
   const connectionRef = useRef<HubConnection | null>(null);
