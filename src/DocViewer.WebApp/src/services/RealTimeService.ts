@@ -1,4 +1,4 @@
-import { HubConnectionBuilder, HubConnectionState, LogLevel, HubConnection } from '@microsoft/signalr';
+import { HubConnectionBuilder, HubConnectionState, LogLevel, HubConnection, HttpTransportType } from '@microsoft/signalr';
 import { useEffect, useState, useRef } from 'react';
 
 export interface IndexingProgress {
@@ -25,9 +25,12 @@ export function useRealTime() {
 
   useEffect(() => {
     const hubConnection = new HubConnectionBuilder()
-      .withUrl(HUB_URL)
+      .withUrl(HUB_URL, {
+        transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling,
+        skipNegotiation: false,
+      })
       .withAutomaticReconnect()
-      .configureLogging(LogLevel.Warning)
+      .configureLogging(LogLevel.Information)
       .build();
 
     connectionRef.current = hubConnection;
