@@ -156,8 +156,10 @@ function AppContent() {
           <PreviewPane selectedFile={selectedFile} />
         </section>
 
-        <LiveProgress />
-        <ActivityFeed />
+        <div className="sidebar-widgets">
+          <LiveProgress />
+          <ActivityFeed />
+        </div>
       </main>
 
       <StatusBar
