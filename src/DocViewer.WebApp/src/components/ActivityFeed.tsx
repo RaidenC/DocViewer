@@ -32,9 +32,7 @@ export default function ActivityFeed() {
 
       {activityFeed.length === 0 ? (
         <div className="text-center py-4">
-          <div className="inline-flex items-center justify-center mb-2">
-            <span className="text-2xl text-slate-300">📭</span>
-          </div>
+          <span className="text-2xl text-slate-300 block mb-2">📭</span>
           <p className="text-xs text-slate-500">No recent activity</p>
         </div>
       ) : (
@@ -42,7 +40,7 @@ export default function ActivityFeed() {
           {activityFeed.map((activity, index) => (
             <div
               key={index}
-              className={`inline-flex items-center gap-2 text-xs p-1.5 bg-white rounded border border-slate-100 w-full ${
+              className={`flex items-center gap-2 text-xs p-1.5 bg-white rounded border border-slate-100 ${
                 index === 0 ? 'animate-in slide-in-from-left-2 fade-in' : ''
               }`}
             >
