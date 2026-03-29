@@ -18,11 +18,11 @@ export default function ActivityFeed() {
   return (
     <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-3 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center">
+        <div className="inline-flex items-center">
           <span className="text-indigo-600 text-xs">⚡</span>
-          <h3 className="font-semibold text-slate-700 text-sm ml-1">Live Activity</h3>
+          <span className="font-semibold text-slate-700 text-sm ml-1">Live Activity</span>
         </div>
-        <div className="flex items-center">
+        <div className="inline-flex items-center">
           <span className={`w-2 h-2 rounded-full ${connectionStatus === 'Connected' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
           <span className="text-xs font-medium text-slate-500 ml-1">
             {connectionStatus === 'Connected' ? 'Live' : 'Offline'}
