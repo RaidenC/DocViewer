@@ -43,7 +43,7 @@ builder.Services.AddSignalR();
 // Services
 builder.Services.AddTransient<IFileSystemService, FileSystemService>();
 builder.Services.AddTransient<ISearchService, OpenSearchService>();
-builder.Services.AddScoped<IDataGenerator, DataGenerator>();
+builder.Services.AddScoped<IDataGenerator, DocViewer.Infrastructure.Services.DataGenerator>();
 builder.Services.AddHostedService<DocumentSyncService>();
 
 // Configuration - load from appsettings.json
