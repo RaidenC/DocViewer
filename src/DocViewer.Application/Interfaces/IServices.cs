@@ -13,6 +13,7 @@ public interface IFileSystemService
 public interface ISearchService
 {
     Task<List<Document>> SearchDocumentsAsync(string? query, string? channel, string? client, DateTime? fromDate, DateTime? toDate, int page = 1, int pageSize = 20);
+    Task<(List<Document> Documents, List<object> SortValues)> SearchDocumentsWithSearchAfterAsync(string? query, string? channel, string? client, DateTime? fromDate, DateTime? toDate, int pageSize = 20, List<object>? searchAfter = null);
     Task IndexDocumentAsync(Document document);
     Task IndexDocumentsAsync(IEnumerable<Document> documents);
     Task<bool> IsHealthyAsync();
@@ -37,4 +38,18 @@ public class SearchResult
     public int Page { get; set; }
     public int PageSize { get; set; }
     public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+}
+
+public interface IDataGenerator
+{
+    Task<int> GenerateDocumentsAsync(int count, IProgress<int>? progress = null, CancellationToken cancellationToken = default);
+    Task<GenerateProgress> GetProgressAsync();
+}
+
+public class GenerateProgress
+{
+    public int TotalDocuments { get; set; }
+    public int DocumentsGenerated { get; set; }
+    public bool IsComplete { get; set; }
+    public string? Error { get; set; }
 }

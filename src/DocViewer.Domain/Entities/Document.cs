@@ -17,6 +17,7 @@ public class Document
     public string Sender { get; set; } = string.Empty;
     public string Subject { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
+    public string FileExtension { get; set; } = string.Empty;
     public Dictionary<string, object> Metadata { get; set; } = new();
 }
 

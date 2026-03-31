@@ -1,3 +1,4 @@
+using DocViewer.Application.Interfaces;
 using FluentAssertions;
 using Xunit;
 

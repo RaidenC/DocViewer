@@ -9,6 +9,7 @@ import DateFilter from './components/Header/DateFilter';
 import ActiveFilters from './components/Header/ActiveFilters';
 import StatusBar from './components/StatusBar';
 import { SearchResultTree } from './components/SearchResultTree/SearchResultTree';
+import BenchmarkPanel from './components/Benchmark/BenchmarkPanel';
 import { transformSearchResultsToTree } from './utils/transformSearchResultsToTree';
 import { useSearch } from './hooks/useSearch';
 import LiveProgress from './components/LiveProgress';
@@ -161,6 +162,8 @@ function AppContent() {
           <ActivityFeed />
         </div>
       </main>
+
+      <BenchmarkPanel />
 
       <StatusBar
         totalCount={12}
