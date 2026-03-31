@@ -12,6 +12,8 @@ import { SearchResultTree } from './components/SearchResultTree/SearchResultTree
 import BenchmarkPanel from './components/Benchmark/BenchmarkPanel';
 import { transformSearchResultsToTree } from './utils/transformSearchResultsToTree';
 import { useSearch } from './hooks/useSearch';
+import LiveProgress from './components/LiveProgress';
+import ActivityFeed from './components/ActivityFeed';
 import type { TreeNode, ActiveFilter } from './types';
 import './App.css';
 
@@ -154,6 +156,11 @@ function AppContent() {
         <section className="content">
           <PreviewPane selectedFile={selectedFile} />
         </section>
+
+        <div className="sidebar-widgets">
+          <LiveProgress />
+          <ActivityFeed />
+        </div>
       </main>
 
       <BenchmarkPanel />

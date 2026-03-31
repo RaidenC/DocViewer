@@ -21,5 +21,8 @@
     "hooks": {
       "pre-commit": "npm run pre-commit"
     }
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^10.0.0"
   }
 }

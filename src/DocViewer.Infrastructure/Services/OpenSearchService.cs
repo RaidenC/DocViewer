@@ -78,7 +78,11 @@ public class OpenSearchService : ISearchService
     {
         var searchDescriptor = new SearchDescriptor<Document>()
             .From((page - 1) * pageSize)
-            .Size(pageSize);
+            .Size(pageSize)
+            .Sort(s => s
+                .Field(f => f.Date, SortOrder.Descending)
+                .Field(f => f.Id, SortOrder.Ascending)
+            );
 
         // _source field filtering - only return needed fields to reduce payload
         searchDescriptor.Source(s => s

@@ -1,3 +1,5 @@
+using DocViewer.Api.Hubs;
+using DocViewer.Api.Services;
 using DocViewer.Application.Interfaces;
 using DocViewer.Infrastructure.Services;
 using Serilog;
@@ -23,9 +25,11 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5217", "http://localhost:3000")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .SetIsOriginAllowed(_ => true); // Needed for SignalR
     });
 });
 
@@ -33,10 +37,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+// SignalR
+builder.Services.AddSignalR();
+
 // Services
 builder.Services.AddTransient<IFileSystemService, FileSystemService>();
 builder.Services.AddTransient<ISearchService, OpenSearchService>();
-builder.Services.AddScoped<IDataGenerator, DataGenerator>();
+builder.Services.AddScoped<IDataGenerator, DocViewer.Infrastructure.Services.DataGenerator>();
 builder.Services.AddHostedService<DocumentSyncService>();
 
 // Configuration - load from appsettings.json
@@ -61,6 +68,8 @@ app.UseSwaggerUI();
 app.UseCors();
 
 app.UseAuthorization();
+
+app.MapHub<DocumentHub>("/hubs/documents");
 
 app.MapControllers();
 

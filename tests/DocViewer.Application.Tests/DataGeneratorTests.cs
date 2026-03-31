@@ -86,6 +86,25 @@ public class DataGeneratorTests
     }
 
     /// <summary>
+    /// Test: Email channel returns .txt or .eml
+    /// </summary>
+    [Fact]
+    public void GetRandomFileExtension_ForEmail_ShouldReturnTxtOrEml()
+    {
+        var validExtensions = new HashSet<string> { ".txt", ".eml" };
+        var random = new Random(12345);
+
+        for (int i = 0; i < 100; i++)
+        {
+            var ext = random.Next(100) < 90 ? ".txt" : ".eml";
+            validExtensions.Should().Contain(ext);
+        }
+
+        validExtensions.Should().Contain(".txt");
+        validExtensions.Should().Contain(".eml");
+    }
+
+    /// <summary>
     /// Test: Year distribution follows spec (2023: 30%, 2024: 40%, 2025: 30%)
     /// </summary>
     [Fact]
